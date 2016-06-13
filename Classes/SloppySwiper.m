@@ -75,7 +75,9 @@
         CGFloat d = translation.x > 0 ? translation.x / CGRectGetWidth(view.bounds) : 0;
         [self.interactionController updateInteractiveTransition:d];
     } else if (recognizer.state == UIGestureRecognizerStateEnded || recognizer.state == UIGestureRecognizerStateCancelled) {
-        if ([recognizer velocityInView:view].x > 0) {
+        CGPoint translation = [recognizer translationInView:view];
+        CGFloat d = translation.x > 0 ? translation.x / CGRectGetWidth(view.bounds) : 0;
+        if (d > 0.5 && [recognizer velocityInView:view].x > 0) {
             [self.interactionController finishInteractiveTransition];
         } else {
             [self.interactionController cancelInteractiveTransition];
