@@ -76,8 +76,16 @@
         [self.interactionController updateInteractiveTransition:d];
     } else if (recognizer.state == UIGestureRecognizerStateEnded || recognizer.state == UIGestureRecognizerStateCancelled) {
         CGPoint translation = [recognizer translationInView:view];
-        CGFloat d = translation.x > 0 ? translation.x / CGRectGetWidth(view.bounds) : 0;
-        if (d > 0.5 && [recognizer velocityInView:view].x > 0) {
+        CGPoint velocity = [recognizer velocityInView:view];
+        CGFloat percent = translation.x > 0 ? translation.x / CGRectGetWidth(view.bounds) : 0;
+        //
+        // ちょっとでも右にスワイプしてたら絶対に戻ってしまうのが不便すぎるので改良する
+        // 移動量、速度、現在の位置(パーセント)から戻るのかキャンセルするかどうか決める
+        // [戻る条件]
+        //   - 画面半分より右にいるときに、少しでも右にスワイプ
+        //   - 画面半分より左にいるときに、ある程度の速度で右にスワイプ
+        //
+        if ((percent >= 0.5 && velocity.x > 0) || (percent < 0.5 && velocity.x > 500)) {
             [self.interactionController finishInteractiveTransition];
         } else {
             [self.interactionController cancelInteractiveTransition];
